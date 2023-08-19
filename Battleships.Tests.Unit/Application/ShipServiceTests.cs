@@ -81,7 +81,7 @@ public class ShipServiceTests
         var result = shipService.HandleShot("A1");
         
         //Then
-        result.ShouldBe(ShotResultType.AlreadyShoot);
+        result.ShouldBe(ShotResultType.AlreadyShot);
     }
 
     [Theory]

@@ -3,7 +3,7 @@ using Battleships.Models;
 
 namespace Battleships.Application;
 
-public class ShipService
+public class ShipService : IShipService
 {
     private readonly Cell[,] _board;
     private readonly Random _random;
@@ -33,7 +33,7 @@ public class ShipService
             throw new InvalidCoordinateException();
         }
 
-        if (_board[column, row].Hit) return ShotResultType.AlreadyShoot;
+        if (_board[column, row].Hit) return ShotResultType.AlreadyShot;
         
         _board[column, row].Hit = true;
         return _board[column, row].ContainShip ? ShotResultType.Hit : ShotResultType.Miss;

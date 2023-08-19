@@ -1,3 +1,9 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using Battleships.Application;
+using Battleships.UserInterface;
 
-Console.WriteLine("Hello, World!");
+var userInterface = new ConsoleUserInterface();
+var boardService = new BoardService(userInterface);
+var shipService = new ShipService(boardService.Board);
+var gameService = new GameService(userInterface, boardService, shipService);
+
+gameService.Play();

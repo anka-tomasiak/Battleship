@@ -34,7 +34,7 @@ public class GameService
             {
                 var result = _shipService.HandleShot(input);
 
-                if (result != ShotResultType.AlreadyShoot)
+                if (result != ShotResultType.AlreadyShot)
                 {
                     _boardService.PrintBoard();
                 }
