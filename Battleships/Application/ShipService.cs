@@ -36,8 +36,9 @@ public class ShipService : IShipService
         if (_board[column, row].Hit) return ShotResultType.AlreadyShot;
         
         _board[column, row].Hit = true;
-        return _board[column, row].ContainShip ? ShotResultType.Hit : ShotResultType.Miss;
-
+        return _board[column, row].ContainShip ? 
+            IsFinalShot()? ShotResultType.FinalShot: ShotResultType.Hit 
+            : ShotResultType.Miss;
     }
 
     private void GenerateShip(Ship ship)
@@ -123,5 +124,10 @@ public class ShipService : IShipService
         column = input[0] - 'A';
 
         return row is >= 0 and < Consts.BoardSize && column is >= 0 and < Consts.BoardSize;
+    }
+
+    private bool IsFinalShot()
+    {
+        return !_board.Cast<Cell>().Any(c => c.ContainShip && !c.Hit);
     }
 }

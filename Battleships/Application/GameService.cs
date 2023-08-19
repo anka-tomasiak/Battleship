@@ -19,14 +19,16 @@ public class GameService
 
     public void Play()
     {
+        _shipService.GenerateShips();
+        
         while (true)
         {
-            _userInterface.WriteLine("Enter coordinates (e.g., A1), or type 'EXIT' to quit.");
+            _userInterface.WriteLine(Consts.InitialMessage);
             var input = _userInterface.Read()?.ToUpper();
 
             if (input == Consts.ExitCommand)
             {
-                _userInterface.WriteLine("Exiting");
+                _userInterface.WriteLine(Consts.ExitCommand);
                 break;
             }
 
@@ -34,15 +36,32 @@ public class GameService
             {
                 var result = _shipService.HandleShot(input);
 
+                _userInterface.WriteLine(GetMessage(result));
                 if (result != ShotResultType.AlreadyShot)
                 {
                     _boardService.PrintBoard();
                 }
+
+                if (result != ShotResultType.FinalShot) continue;
+                
+                _userInterface.WriteLine(Consts.ExitCommand);
+                break;
             }
             catch (InvalidCoordinateException ex)
             {
                 _userInterface.WriteLine(ex.Message);
             }
         }
+    }
+
+    private string GetMessage(ShotResultType shotResultType)
+    {
+        return shotResultType switch
+        {
+            ShotResultType.Hit => Consts.HitMessage,
+            ShotResultType.Miss => Consts.MissMessage,
+            ShotResultType.FinalShot => Consts.FinalHitMessage,
+            _ => Consts.AlreadyShotMessage
+        };
     }
 }

@@ -4,5 +4,6 @@ public enum ShotResultType
 {
     Hit,
     Miss,
-    AlreadyShot
+    AlreadyShot,
+    FinalShot
 }

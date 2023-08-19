@@ -117,6 +117,21 @@ public class ShipServiceTests
         result.ShouldBe(expectedResultType);
     }
 
+    [Fact]
+    public void HandleShot_IfFinalShot_ShouldReturnFinalShotResultType()
+    {
+        //Given
+        var board = GetBoard(false, false);
+        board[0, 0].ContainShip = true;
+        var shipService = new ShipService(board);
+        
+        //When
+        var result = shipService.HandleShot("A1");
+        
+        //Then
+        result.ShouldBe(ShotResultType.FinalShot);
+    }
+
     private Cell[,] GetBoard(bool containShips, bool hit)
     {
         var board = new Cell[Consts.BoardSize, Consts.BoardSize];

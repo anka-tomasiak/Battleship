@@ -10,6 +10,24 @@ namespace Battleships.Tests.Unit.Application;
 public class GameServiceTests
 {
     [Fact]
+    public void Play_Always_ShouldGenerateShips()
+    {
+        //Given
+        var userInterface = Substitute.For<IUserInterface>();
+        userInterface.Read().Returns(Consts.ExitCommand);
+        var boardService = Substitute.For<IBoardService>();
+        var shipService = Substitute.For<IShipService>();
+        var gameService = new GameService(userInterface, boardService, shipService);
+        
+        //When
+        gameService.Play();
+        
+        //Then
+        userInterface.Received(1).Read();
+        shipService.Received(1).GenerateShips();
+    }
+    
+    [Fact]
     public void Play_WhenUserTypeExit_ShouldExit()
     {
         //Given
@@ -24,6 +42,7 @@ public class GameServiceTests
         
         //Then
         userInterface.Received(1).Read();
+        userInterface.Received(1).WriteLine(Consts.ExitCommand);
         shipService.DidNotReceiveWithAnyArgs().HandleShot(Arg.Any<string>());
         boardService.DidNotReceiveWithAnyArgs().PrintBoard();
     }
@@ -52,7 +71,7 @@ public class GameServiceTests
     [Theory]
     [InlineData(ShotResultType.Hit)]
     [InlineData(ShotResultType.Miss)]
-    public void Play_WhenHandleCellShotFirstTime_ShouldHandleShotAndPrintBoard(ShotResultType shotResultType)
+    public void Play_WhenHandleShotFirstTime_ShouldHandleShotAndPrintBoard(ShotResultType shotResultType)
     {
         //Given
         var input = Any.String().ToUpper();
@@ -91,5 +110,28 @@ public class GameServiceTests
         userInterface.Received(2).Read();
         boardService.DidNotReceiveWithAnyArgs().PrintBoard();
         userInterface.Received(1).WriteLine("Invalid coordinate. Please enter coordinate like A1 (letter is row, digit is column). Max row: J, max column: 10");
+    }
+
+    [Theory]
+    [InlineData(ShotResultType.AlreadyShot, Consts.AlreadyShotMessage)]
+    [InlineData(ShotResultType.Hit, Consts.HitMessage)]
+    [InlineData(ShotResultType.Miss, Consts.MissMessage)]
+    [InlineData(ShotResultType.FinalShot, Consts.FinalHitMessage)]
+    public void Play_WhenGivenShotResultType_ShouldWriteExpectedMessage(ShotResultType shotResultType, string expectedMessage)
+    {
+        //Given
+        var input = Any.String().ToUpper();
+        var userInterface = Substitute.For<IUserInterface>();
+        userInterface.Read().Returns(input, Consts.ExitCommand);
+        var boardService = Substitute.For<IBoardService>();
+        var shipService = Substitute.For<IShipService>();
+        shipService.HandleShot(input).Returns(shotResultType);
+        var gameService = new GameService(userInterface, boardService, shipService);
+        
+        //When
+        gameService.Play();
+        
+        //Then
+        userInterface.Received(1).WriteLine(expectedMessage);
     }
 }

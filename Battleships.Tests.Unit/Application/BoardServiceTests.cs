@@ -18,7 +18,7 @@ public class BoardServiceTests
         //Then
         boardService.Board.GetLength(0).ShouldBe(expectedSize);
         boardService.Board.GetLength(1).ShouldBe(expectedSize);
-        boardService.Board.Cast<Cell>().ToArray().All(c => c.Symbol == CellSymbols.DefaultCellSymbol).ShouldBeTrue();
+        boardService.Board.Cast<Cell>().ToArray().All(c => c.Symbol == Consts.DefaultCellSymbol).ShouldBeTrue();
     }
     
     [Fact]
