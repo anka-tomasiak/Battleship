@@ -77,8 +77,8 @@ public class ShipService : IShipService
 
     private static bool CanPlaceShip(int x, int y, int size, bool isHorizontal, Cell[,] board)
     {
-        var minX = Math.Max(0, x - 1);
-        var minY = Math.Max(0, y - 1);
+        var minX = Math.Max(0, x);
+        var minY = Math.Max(0, y);
         var maxX = Math.Min(board.GetLength(0) - 1, isHorizontal ? x + size : x);
         var maxY = Math.Min(board.GetLength(1) - 1, isHorizontal ? y : y + size);
         
