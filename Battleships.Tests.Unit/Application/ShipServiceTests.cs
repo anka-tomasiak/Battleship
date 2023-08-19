@@ -69,6 +69,23 @@ public class ShipServiceTests
     }
 
     [Theory]
+    [InlineData("A1")]
+    [InlineData("F10")]
+    public void HandleShot_WithCorrectCoordinate_ShouldPlaceShot(string coordinate)
+    {
+        //Given
+        var board = GetBoard(true, false);
+        var shipService = new ShipService(board);
+        
+        //When
+        var result = shipService.HandleShot(coordinate);
+        
+        //Then
+        result.ShouldBe(ShotResultType.Hit);
+        board.Cast<Cell>().Count(c=>c.Hit).ShouldBe(1);
+    }
+
+    [Theory]
     [InlineData(true)]
     [InlineData(false)]
     public void HandleShot_IfAlreadyHit_ShouldReturnAlreadyShotResultType(bool containShip)

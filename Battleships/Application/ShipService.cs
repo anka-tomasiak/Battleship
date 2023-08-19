@@ -100,13 +100,27 @@ public class ShipService : IShipService
         row = -1;
         column = -1;
 
-        if (input is not { Length: 2 } || !char.IsLetter(input[0]) || !char.IsDigit(input[1]))
+        if (string.IsNullOrEmpty(input) || input.Length < 2 || input.Length > 3 || !char.IsLetter(input[0]) || !char.IsDigit(input[1]))
         {
             return false;
         }
 
-        row = input[0] - 'A';
-        column = input[1] - '1';
+        if (input.Length == 2)
+        {
+            row = input[1] - '1';
+        }
+        else
+        {
+            if (!char.IsDigit(input[2]))
+            {
+                return false;
+            }
+
+            var numberPart = input[^2..];
+            row = int.Parse(numberPart) - 1;
+        }
+
+        column = input[0] - 'A';
 
         return row is >= 0 and < Consts.BoardSize && column is >= 0 and < Consts.BoardSize;
     }
