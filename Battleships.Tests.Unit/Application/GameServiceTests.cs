@@ -42,7 +42,7 @@ public class GameServiceTests
         
         //Then
         userInterface.Received(1).Read();
-        userInterface.Received(1).WriteLine(Consts.ExitCommand);
+        userInterface.Received(1).WriteLine(Consts.ExitMessage);
         shipService.DidNotReceiveWithAnyArgs().HandleShot(Arg.Any<string>());
         boardService.DidNotReceiveWithAnyArgs().PrintBoard();
     }

@@ -28,7 +28,7 @@ public class GameService
 
             if (input == Consts.ExitCommand)
             {
-                _userInterface.WriteLine(Consts.ExitCommand);
+                _userInterface.WriteLine(Consts.ExitMessage);
                 break;
             }
 
