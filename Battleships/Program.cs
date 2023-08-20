@@ -1,9 +1,14 @@
 ﻿using Battleships.Application;
 using Battleships.UserInterface;
+using Microsoft.Extensions.DependencyInjection;
 
-var userInterface = new ConsoleUserInterface();
-var boardService = new BoardService(userInterface);
-var shipService = new ShipService(boardService.Board);
-var gameService = new GameService(userInterface, boardService, shipService);
+var serviceProvider = new ServiceCollection()
+    .AddScoped<IUserInterface, ConsoleUserInterface>()
+    .AddScoped<IBoardService, BoardService>()
+    .AddScoped<IShipService, ShipService>()
+    .AddTransient<IGameService, GameService>()
+    .BuildServiceProvider();
 
-gameService.Play();
+var gameService = serviceProvider.GetService<IGameService>();
+
+gameService?.Play();

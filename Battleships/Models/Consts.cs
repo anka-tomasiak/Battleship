@@ -14,4 +14,6 @@ public static class Consts
     public const string AlreadyShotMessage = "Insanity is doing the same thing over and over and expecting different results.";
     public const string ExitMessage = "Goodbye!";
     public const string InitialMessage = "Enter coordinates (e.g., A1), or type 'EXIT' to quit.";
+    public const string TryAgainMessage = "Do you want to try again? If so, type 'yes'.";
+    public const string TryAgainCommand = "yes";
 }

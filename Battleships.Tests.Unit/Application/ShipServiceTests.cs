@@ -1,7 +1,6 @@
 ﻿using Battleships.Application;
 using Battleships.Exceptions;
 using Battleships.Models;
-using TddXt.AnyRoot.Numbers;
 
 namespace Battleships.Tests.Unit.Application;
 
@@ -19,7 +18,7 @@ public class ShipServiceTests
         };
         
         //When
-        var shipService = new ShipService(new Cell[Any.Integer(),Any.Integer()]);
+        var shipService = new ShipService(Substitute.For<IBoardService>());
         
         //Then
         shipService.Ships.ShouldBeEquivalentTo(expectedShips);
@@ -29,8 +28,9 @@ public class ShipServiceTests
     public void GenerateShip_WhenNoPlaceToShipsOnBoard_ShouldThrowUnableToPlaceShipException()
     {
         //Given
-        var board = GetBoard(true, false);
-        var shipService = new ShipService(board);
+        var boardService = Substitute.For<IBoardService>();
+        boardService.Board.Returns(GetBoard(true, false));
+        var shipService = new ShipService(boardService);
         
         //When-Then
         Should.Throw<UnableToPlaceShipException>(() => shipService.GenerateShips());
@@ -40,15 +40,16 @@ public class ShipServiceTests
     public void GenerateShip_WithCorrectBoard_ShouldGenerateShips()
     {
         //Given
-        var board = GetBoard(false, false);
-        var shipService = new ShipService(board);
+        var boardService = Substitute.For<IBoardService>();
+        boardService.Board.Returns(GetBoard(false, false));
+        var shipService = new ShipService(boardService);
         var expectedCellsWithShips = shipService.Ships.Sum(s => s.Size);
         
         //When
         shipService.GenerateShips();
         
         //Then
-        board.Cast<Cell>().Count(c=>c.ContainShip).ShouldBe(expectedCellsWithShips);
+        boardService.Board.Cast<Cell>().Count(c=>c.ContainShip).ShouldBe(expectedCellsWithShips);
     }
 
     [Theory]
@@ -62,7 +63,7 @@ public class ShipServiceTests
     public void HandleShot_WithIncorrectCoordinate_ShouldThrowInvalidCoordinateException(string coordinate)
     {
         //Given
-        var shipService = new ShipService(new Cell[Any.Integer(),Any.Integer()]);
+        var shipService = new ShipService(Substitute.For<IBoardService>());
         
         //When-Then
         Should.Throw<InvalidCoordinateException>(() => shipService.HandleShot(coordinate));
@@ -74,15 +75,16 @@ public class ShipServiceTests
     public void HandleShot_WithCorrectCoordinate_ShouldPlaceShot(string coordinate)
     {
         //Given
-        var board = GetBoard(true, false);
-        var shipService = new ShipService(board);
+        var boardService = Substitute.For<IBoardService>();
+        boardService.Board.Returns(GetBoard(true, false));
+        var shipService = new ShipService(boardService);
         
         //When
         var result = shipService.HandleShot(coordinate);
         
         //Then
         result.ShouldBe(ShotResultType.Hit);
-        board.Cast<Cell>().Count(c=>c.Hit).ShouldBe(1);
+        boardService.Board.Cast<Cell>().Count(c=>c.Hit).ShouldBe(1);
     }
 
     [Theory]
@@ -91,8 +93,9 @@ public class ShipServiceTests
     public void HandleShot_IfAlreadyHit_ShouldReturnAlreadyShotResultType(bool containShip)
     {
         //Given
-        var board = GetBoard(containShip, true);
-        var shipService = new ShipService(board);
+        var boardService = Substitute.For<IBoardService>();
+        boardService.Board.Returns(GetBoard(containShip, true));
+        var shipService = new ShipService(boardService);
         
         //When
         var result = shipService.HandleShot("A1");
@@ -107,8 +110,9 @@ public class ShipServiceTests
     public void HandleShot_IfHitFirstTime_ShouldReturnHitShotResultType(bool containShip, ShotResultType expectedResultType)
     {
         //Given
-        var board = GetBoard(containShip, false);
-        var shipService = new ShipService(board);
+        var boardService = Substitute.For<IBoardService>();
+        boardService.Board.Returns(GetBoard(containShip, false));
+        var shipService = new ShipService(boardService);
         
         //When
         var result = shipService.HandleShot("A1");
@@ -121,9 +125,10 @@ public class ShipServiceTests
     public void HandleShot_IfFinalShot_ShouldReturnFinalShotResultType()
     {
         //Given
-        var board = GetBoard(false, false);
-        board[0, 0].ContainShip = true;
-        var shipService = new ShipService(board);
+        var boardService = Substitute.For<IBoardService>();
+        boardService.Board.Returns(GetBoard(false, false));
+        boardService.Board[0, 0].ContainShip = true;
+        var shipService = new ShipService(boardService);
         
         //When
         var result = shipService.HandleShot("A1");

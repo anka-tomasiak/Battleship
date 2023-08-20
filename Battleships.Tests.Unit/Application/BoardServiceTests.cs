@@ -7,7 +7,7 @@ namespace Battleships.Tests.Unit.Application;
 public class BoardServiceTests
 {
     [Fact]
-    public void Constructor_Always_ShouldInitializeBoardWithCorrectSizeAndSymbol()
+    public void Constructor_Always_ShouldInitializeEmptyBoard()
     {
         //Given
         const int expectedSize = 10;
@@ -16,8 +16,21 @@ public class BoardServiceTests
         var boardService = new BoardService(Substitute.For<IUserInterface>());
         
         //Then
+        boardService.Board.Cast<Cell>().ToArray().All(c => c.Symbol == Consts.DefaultCellSymbol).ShouldBeTrue();
         boardService.Board.GetLength(0).ShouldBe(expectedSize);
         boardService.Board.GetLength(1).ShouldBe(expectedSize);
+    }
+    
+    [Fact]
+    public void Initialize_Always_ShouldInitializeBoardWithCorrectSizeAndSymbol()
+    {
+        //Given
+        var boardService = new BoardService(Substitute.For<IUserInterface>());
+        
+        //When
+        boardService.InitializeBoard();
+        
+        //Then
         boardService.Board.Cast<Cell>().ToArray().All(c => c.Symbol == Consts.DefaultCellSymbol).ShouldBeTrue();
     }
     
@@ -27,7 +40,7 @@ public class BoardServiceTests
         //Given
         var userInterface = Substitute.For<IUserInterface>();
         var boardService = new BoardService(userInterface);
-        
+
         //When
         boardService.PrintBoard();
         

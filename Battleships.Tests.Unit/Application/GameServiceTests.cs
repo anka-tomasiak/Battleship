@@ -10,7 +10,7 @@ namespace Battleships.Tests.Unit.Application;
 public class GameServiceTests
 {
     [Fact]
-    public void Play_Always_ShouldGenerateShips()
+    public void Play_WhenNoUnableToPlaceShipException_ShouldGenerateShips()
     {
         //Given
         var userInterface = Substitute.For<IUserInterface>();
@@ -25,6 +25,43 @@ public class GameServiceTests
         //Then
         userInterface.Received(1).Read();
         shipService.Received(1).GenerateShips();
+    }
+
+    [Fact]
+    public void Play_WhenUnableToPlaceShipExceptionAndUserWantToTryAgain_ShouldTryAgain()
+    {
+        //Given
+        var userInterface = Substitute.For<IUserInterface>();
+        userInterface.Read().Returns(Consts.TryAgainCommand, Consts.ExitCommand);
+        var boardService = Substitute.For<IBoardService>();
+        var shipService = Substitute.For<IShipService>();
+        shipService.When(s => s.GenerateShips()).Do(s => throw new UnableToPlaceShipException());
+        var gameService = new GameService(userInterface, boardService, shipService);
+        
+        //When
+        gameService.Play();
+        
+        //Then
+        shipService.Received(2).GenerateShips();
+        boardService.Received(1).InitializeBoard();
+    }
+
+    [Fact]
+    public void Play_WhenUnableToPlaceShipAfterRetries_ShouldExit()
+    {
+        //Given
+        var userInterface = Substitute.For<IUserInterface>();
+        userInterface.Read().Returns(Consts.ExitCommand);
+        var boardService = Substitute.For<IBoardService>();
+        var shipService = Substitute.For<IShipService>();
+        shipService.When(s => s.GenerateShips()).Do(s => throw new UnableToPlaceShipException());
+        var gameService = new GameService(userInterface, boardService, shipService);
+        
+        //When
+        gameService.Play();
+        
+        //Then
+        userInterface.DidNotReceive().WriteLine(Consts.InitialMessage);
     }
     
     [Fact]

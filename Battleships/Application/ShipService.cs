@@ -5,13 +5,13 @@ namespace Battleships.Application;
 
 public class ShipService : IShipService
 {
-    private readonly Cell[,] _board;
+    private readonly IBoardService _boardService;
     private readonly Random _random;
     public List<Ship> Ships { get; }
 
-    public ShipService(Cell[,] board)
+    public ShipService(IBoardService boardService)
     {
-        _board = board;
+        _boardService = boardService;
         _random = new Random();
         Ships = new List<Ship>
         {
@@ -33,10 +33,10 @@ public class ShipService : IShipService
             throw new InvalidCoordinateException();
         }
 
-        if (_board[column, row].Hit) return ShotResultType.AlreadyShot;
+        if (_boardService.Board[column, row].Hit) return ShotResultType.AlreadyShot;
         
-        _board[column, row].Hit = true;
-        return _board[column, row].ContainShip ? 
+        _boardService.Board[column, row].Hit = true;
+        return _boardService.Board[column, row].ContainShip ? 
             IsFinalShot()? ShotResultType.FinalShot: ShotResultType.Hit 
             : ShotResultType.Miss;
     }
@@ -60,17 +60,17 @@ public class ShipService : IShipService
             {
                 throw new UnableToPlaceShipException();
             }
-        } while (!CanPlaceShip(startX, startY, ship.Size, isHorizontal, _board));
+        } while (!CanPlaceShip(startX, startY, ship.Size, isHorizontal, _boardService.Board));
         
         for (var i = 0; i < ship.Size; i++)
         {
             if (isHorizontal)
             {
-                _board[startX + i, startY].ContainShip = true;
+                _boardService.Board[startX + i, startY].ContainShip = true;
             }
             else
             {
-                _board[startX, startY + i].ContainShip = true;
+                _boardService.Board[startX, startY + i].ContainShip = true;
             }
         }
     }
@@ -128,6 +128,6 @@ public class ShipService : IShipService
 
     private bool IsFinalShot()
     {
-        return !_board.Cast<Cell>().Any(c => c.ContainShip && !c.Hit);
+        return !_boardService.Board.Cast<Cell>().Any(c => c.ContainShip && !c.Hit);
     }
 }

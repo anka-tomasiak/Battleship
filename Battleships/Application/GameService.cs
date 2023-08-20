@@ -4,7 +4,7 @@ using Battleships.UserInterface;
 
 namespace Battleships.Application;
 
-public class GameService
+public class GameService : IGameService
 {
     private readonly IUserInterface _userInterface;
     private readonly IBoardService _boardService;
@@ -19,7 +19,10 @@ public class GameService
 
     public void Play()
     {
-        _shipService.GenerateShips();
+        if (!GenerateShips())
+        {
+            return;
+        }
         
         while (true)
         {
@@ -50,6 +53,36 @@ public class GameService
             catch (InvalidCoordinateException ex)
             {
                 _userInterface.WriteLine(ex.Message);
+            }
+        }
+    }
+
+    private bool GenerateShips()
+    {
+        var initializeBoard = false;
+        
+        while (true)
+        {
+            try
+            {
+                if (initializeBoard)
+                {
+                    _boardService.InitializeBoard();
+                }
+
+                _shipService.GenerateShips();
+                return true;
+            }
+            catch (UnableToPlaceShipException ex)
+            {
+                _userInterface.WriteLine($"{ex.Message} {Consts.TryAgainMessage}");
+                var input = _userInterface.Read()?.ToLower();
+                if (input != Consts.TryAgainCommand)
+                {
+                    return false;
+                }
+
+                initializeBoard = true;
             }
         }
     }

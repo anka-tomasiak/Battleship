@@ -33,7 +33,7 @@ public class BoardService : IBoardService
         }
     }
     
-    private void InitializeBoard()
+    public void InitializeBoard()
     {
         for (var i = 0; i < Size; i++)
         {
