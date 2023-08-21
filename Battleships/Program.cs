@@ -1,4 +1,5 @@
 ﻿using Battleships.Application;
+using Battleships.Models;
 using Battleships.UserInterface;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,6 +10,13 @@ var serviceProvider = new ServiceCollection()
     .AddTransient<IGameService, GameService>()
     .BuildServiceProvider();
 
-var gameService = serviceProvider.GetService<IGameService>();
-
-gameService?.Play();
+try
+{
+    var gameService = serviceProvider.GetRequiredService<IGameService>();
+    gameService.Play();
+}
+catch (InvalidOperationException)
+{
+    var userInterface = serviceProvider.GetRequiredService<IUserInterface>();
+    userInterface.WriteLine(Consts.ReallyBadExceptionMessage);
+}

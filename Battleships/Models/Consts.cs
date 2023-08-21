@@ -16,4 +16,6 @@ public static class Consts
     public const string InitialMessage = "Enter coordinates (e.g., A1), or type 'EXIT' to quit.";
     public const string TryAgainMessage = "Do you want to try again? If so, type 'yes'.";
     public const string TryAgainCommand = "yes";
+    public const string ReallyBadExceptionMessage =
+        "Whoops! This app seems to needs a moment to catch its breath. Our best specialists will take care of it.";
 }
