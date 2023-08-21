@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 var serviceProvider = new ServiceCollection()
     .AddScoped<IUserInterface, ConsoleUserInterface>()
-    .AddScoped<IBoardService, BoardService>()
+    .AddScoped<IBoardService>(provider => BoardService.Create(provider.GetRequiredService<IUserInterface>()))
     .AddScoped<IShipService, ShipService>()
     .AddTransient<IGameService, GameService>()
     .BuildServiceProvider();

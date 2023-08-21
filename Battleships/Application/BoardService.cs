@@ -10,11 +10,17 @@ public class BoardService : IBoardService
 
     public Cell[,] Board { get; }
     
-    public BoardService(IUserInterface userInterface)
+    private BoardService(IUserInterface userInterface)
     {
         _userInterface = userInterface;
         Board = new Cell[Size, Size];
-        InitializeBoard();
+    }
+
+    public static BoardService Create(IUserInterface userInterface)
+    {
+        var boardService = new BoardService(userInterface);
+        boardService.InitializeBoard();
+        return boardService;
     }
 
     public void PrintBoard()
